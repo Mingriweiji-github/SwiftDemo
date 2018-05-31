@@ -11,6 +11,10 @@ import Foundation
 func changeSign(_ operend : Double) -> Double{
     return -operend
 }
+
+func mutiply(_ op1:Double,_ op2:Double) -> Double {
+    return op1 * op2
+}
 struct CalcluatorBrain {
     //定义私有变量
     private var accumulator: Double?
@@ -18,15 +22,34 @@ struct CalcluatorBrain {
     private enum Operation {
         case constant(Double)
         case unaryOperation((Double) -> Double)
+        case binaryOperation((Double,Double) -> Double)
+        case equals
     }
+    
+    //定义字典
     private var operations : Dictionary<String,Operation> = [
         "π" : Operation.constant(Double.pi),
         "e" : Operation.constant(M_E),
         "√" : Operation.unaryOperation(sqrt),
         "cos": Operation.unaryOperation(cos),
-        "-" : Operation.unaryOperation(changeSign)
+        "-" : Operation.unaryOperation(changeSign),
+        "×" : Operation.binaryOperation(mutiply),
+        "=" : Operation.equals
     ]
     //定义函数
+    struct AppendingBianayOperation {
+        let function : (Double,Double) -> Double
+        let firstOp : Double
+        
+        ///?????
+        func perform(with SecondOp:Double) -> Double {
+            return function(firstOp , SecondOp)
+        }
+    }
+    //定义结构体
+    private var apo : AppendingBianayOperation?
+
+    
     mutating func performOperation(_ symbol: String) {
         if let operation = operations[symbol] {
             switch operation{
@@ -36,8 +59,20 @@ struct CalcluatorBrain {
                 if accumulator != nil{
                     accumulator = function(accumulator!)
                 }
+            case .binaryOperation(let function):
+                if accumulator != nil{
+                    apo = AppendingBianayOperation(function: function, firstOp: accumulator!)
+                    accumulator = nil
+                }
+            case .equals:
+                performAppendingBinary(<#T##symbol: String##String#>)
+            break
             }
         }
+    }
+    
+    private func performAppendingBinary(){
+        
     }
     mutating func setOperand(_ operand:Double) {
         accumulator = operand
