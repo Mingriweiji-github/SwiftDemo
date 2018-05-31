@@ -36,18 +36,17 @@ struct CalcluatorBrain {
         "×" : Operation.binaryOperation(mutiply),
         "=" : Operation.equals
     ]
-    //定义函数
+    //定义结构体
+    private var apo : AppendingBianayOperation?
     struct AppendingBianayOperation {
         let function : (Double,Double) -> Double
         let firstOp : Double
-        
         ///?????
+        //定义函数
         func perform(with SecondOp:Double) -> Double {
             return function(firstOp , SecondOp)
         }
     }
-    //定义结构体
-    private var apo : AppendingBianayOperation?
 
     
     mutating func performOperation(_ symbol: String) {
@@ -65,14 +64,17 @@ struct CalcluatorBrain {
                     accumulator = nil
                 }
             case .equals:
-                performAppendingBinary(<#T##symbol: String##String#>)
+                performAppendingBinary()
             break
             }
         }
     }
     
-    private func performAppendingBinary(){
-        
+    private mutating func performAppendingBinary(){
+        if apo != nil && accumulator != nil{
+            accumulator = apo?.perform(with: accumulator!)
+            apo = nil
+        }
     }
     mutating func setOperand(_ operand:Double) {
         accumulator = operand
