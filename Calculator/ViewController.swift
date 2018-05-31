@@ -10,42 +10,42 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    @IBOutlet weak var result: UILabel!
+    @IBOutlet weak var display: UILabel!
     var userisTypeing = false
-
+    
     @IBAction func touchButtonSeven(_ sender: UIButton) {
         let digit = sender.currentTitle!
         
         if userisTypeing {
-            let textInLabel = result.text!
-            result.text = textInLabel + digit
+            let textOnLabel = display.text!
+            display.text = textOnLabel + digit
         }else{
-            result.text = digit
+            display.text = digit
             userisTypeing = true
         }
     }
     
-    var resultDouble: Double {
+    var displayDouble: Double {
         get {
-            return Double(result.text!)!
+            return Double(display.text!)!
         }
         set {
-            result.text! = String(newValue)
+            display.text!  = String(newValue)
         }
     }
+    private var brainModel : CalcluatorBrain = CalcluatorBrain()
     @IBAction func performOperation(_ sender: UIButton) {
-        userisTypeing = false
         
-        if let mathMaticolSymbol = sender.currentTitle {
-            switch mathMaticolSymbol{
-            case "π":
-                result.text  = "\(Double.pi)"
-            case "√":
-                let midVar = Double(result.text!)!
-                result.text = String(sqrt(midVar))
-            default:
-                break
-            }
+        if userisTypeing {
+            brainModel.setOperand(displayDouble)
+            userisTypeing = false
+        }
+        
+        if let mathSymbol = sender.currentTitle {
+            brainModel.performOperation(mathSymbol)
+        }
+        if let result = brainModel.result {
+            displayDouble = result
         }
     }
     
