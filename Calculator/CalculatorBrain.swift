@@ -32,12 +32,15 @@ struct CalcluatorBrain {
         "e" : Operation.constant(M_E),
         "√" : Operation.unaryOperation(sqrt),
         "cos": Operation.unaryOperation(cos),
-        "-" : Operation.unaryOperation(changeSign),
-        "×" : Operation.binaryOperation(mutiply),
+        "±"  :Operation.unaryOperation({-$0}),
+        "−" : Operation.binaryOperation({$0 - $1}),
+        "×" : Operation.binaryOperation({$0 * $1}),
+        "+" : Operation.binaryOperation({$0 + $1}),
+        "÷" : Operation.binaryOperation({$0 / $1}),
         "=" : Operation.equals
     ]
     //定义结构体
-    private var apo : AppendingBianayOperation?
+    private var appendingBianryOperation : AppendingBianayOperation?
     struct AppendingBianayOperation {
         let function : (Double,Double) -> Double
         let firstOp : Double
@@ -60,7 +63,7 @@ struct CalcluatorBrain {
                 }
             case .binaryOperation(let function):
                 if accumulator != nil{
-                    apo = AppendingBianayOperation(function: function, firstOp: accumulator!)
+                    appendingBianryOperation = AppendingBianayOperation(function: function, firstOp: accumulator!)
                     accumulator = nil
                 }
             case .equals:
@@ -71,9 +74,9 @@ struct CalcluatorBrain {
     }
     
     private mutating func performAppendingBinary(){
-        if apo != nil && accumulator != nil{
-            accumulator = apo?.perform(with: accumulator!)
-            apo = nil
+        if appendingBianryOperation != nil && accumulator != nil{
+            accumulator = appendingBianryOperation?.perform(with: accumulator!)
+            appendingBianryOperation = nil
         }
     }
     mutating func setOperand(_ operand:Double) {
